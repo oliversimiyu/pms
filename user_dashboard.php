@@ -146,7 +146,7 @@ $department = get_department_by_id($user['department']);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pending Resource Requests</div>
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Pending Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $pending_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -166,7 +166,7 @@ $department = get_department_by_id($user['department']);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved Resource Requests</div>
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Approved Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $approved_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -186,7 +186,7 @@ $department = get_department_by_id($user['department']);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejected Resource Requests</div>
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Rejected Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $rejected_count; ?></div>
                             </div>
                             <div class="col-auto">

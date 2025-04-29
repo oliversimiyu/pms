@@ -134,7 +134,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pending Resource Requests</div>
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Pending Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $pending_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -154,7 +154,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved Resource Requests</div>
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Approved Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $approved_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -174,7 +174,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total School Users</div>
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Total School Users</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $user_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -194,7 +194,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Low Stock School Supplies</div>
+                                <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Low Stock School Supplies</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $low_stock_count; ?></div>
                             </div>
                             <div class="col-auto">
