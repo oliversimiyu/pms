@@ -17,11 +17,17 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $requisition_id = intval($_GET['id']);
 $requisition = get_requisition_by_id($requisition_id);
 
+// Get user information for department check
+$current_user = get_user_by_id($_SESSION['user_id']);
+
 // If requisition doesn't exist or user doesn't have permission to view it
 if (!$requisition || 
     ($_SESSION['user_role'] !== 'admin' && 
      $_SESSION['user_role'] !== 'procurement' && 
      $_SESSION['user_role'] !== 'approver' && 
+     // Allow HODs to view requisitions from their department
+     !($_SESSION['user_role'] === 'hod' && $current_user && isset($current_user['department']) && 
+       $requisition['department'] == $current_user['department']) && 
      $requisition['requester_id'] !== $_SESSION['user_id'])) {
     header("Location: view_requisitions.php");
     exit();
@@ -186,7 +192,7 @@ foreach ($requisition['items'] as $item) {
                     </div>
                 <?php endif; ?>
                 
-                <?php if (($_SESSION['user_role'] === 'approver' || $_SESSION['user_role'] === 'admin') && $requisition['status'] === 'pending'): ?>
+                <?php if (($_SESSION['user_role'] === 'approver' || $_SESSION['user_role'] === 'admin' || $_SESSION['user_role'] === 'hod') && $requisition['status'] === 'pending'): ?>
                     <div class="mt-4">
                         <h5>Approval Actions</h5>
                         <form action="process_approval.php" method="post">

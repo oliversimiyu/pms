@@ -2,8 +2,8 @@
 session_start();
 include_once('includes/config.php');
 
-// Check if user is logged in and has approver or admin role
-if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] !== 'approver' && $_SESSION['user_role'] !== 'admin')) {
+// Check if user is logged in and has approver, admin, or HOD role
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] !== 'approver' && $_SESSION['user_role'] !== 'admin' && $_SESSION['user_role'] !== 'hod')) {
     header("Location: login.php");
     exit();
 }

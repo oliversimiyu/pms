@@ -20,6 +20,17 @@ if ($user_role === 'admin' || $user_role === 'procurement') {
 } elseif ($user_role === 'approver') {
     // Approvers see requisitions pending their approval
     $requisitions = get_requisitions_for_approval($_SESSION['user_id']);
+} elseif ($user_role === 'hod') {
+    // HODs see requisitions from their department
+    $all_requisitions = get_all_requisitions();
+    $department_id = $user['department'];
+    
+    foreach ($all_requisitions as $req) {
+        $req_user = get_user_by_id($req['requester_id']);
+        if ($req_user && $req_user['department'] == $department_id) {
+            $requisitions[] = $req;
+        }
+    }
 } else {
     // Regular users see only their own requisitions
     $requisitions = get_user_requisitions($_SESSION['user_id']);
@@ -116,7 +127,7 @@ $current_requisitions = array_slice($requisitions, $offset, $items_per_page);
                                 <td>
                                     <a href="requisition_details.php?id=<?php echo $req['requisition_id']; ?>" class="btn btn-sm btn-info">View</a>
                                     
-                                    <?php if ($user_role === 'approver' && $req['status'] === 'pending'): ?>
+                                    <?php if (($user_role === 'approver' || $user_role === 'admin' || $user_role === 'hod') && $req['status'] === 'pending'): ?>
                                         <a href="approve_requisition.php?id=<?php echo $req['requisition_id']; ?>" class="btn btn-sm btn-success">Approve</a>
                                         <a href="reject_requisition.php?id=<?php echo $req['requisition_id']; ?>" class="btn btn-sm btn-danger">Reject</a>
                                     <?php endif; ?>
