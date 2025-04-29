@@ -9,6 +9,7 @@ $items_file = $data_dir . '/items.json';
 $approvals_file = $data_dir . '/approvals.json';
 $notifications_file = $data_dir . '/notifications.json';
 $inventory_file = $data_dir . '/inventory.json';
+$account_requests_file = $data_dir . '/account_requests.json';
 
 // Ensure the data directory exists
 if (!file_exists($data_dir)) {
@@ -583,7 +584,10 @@ function get_user_notifications($user_id) {
     $user_notifications = [];
     
     foreach ($notifications as $notification) {
-        if ($notification['user_id'] == $user_id) {
+        // Include notifications specifically for this user
+        // Also include admin notifications for all admins
+        if ($notification['user_id'] == $user_id || 
+            ($notification['user_id'] == 'admin' && $user_id == 'admin')) {
             $user_notifications[] = $notification;
         }
     }
@@ -597,32 +601,31 @@ function get_user_notifications($user_id) {
 }
 
 // Function to add a new notification
-function add_notification($user_id, $message) {
-    global $notifications_file;
+function add_notification($notification_data) {
+    global $notifications_file, $data_dir;
+    
+    // Ensure data directory exists
+    if (!file_exists($data_dir)) {
+        mkdir($data_dir, 0755, true);
+    }
     
     $notifications = get_all_notifications();
     
-    // Generate new notification ID
-    $max_id = 0;
-    foreach ($notifications as $notification) {
-        if ($notification['notification_id'] > $max_id) {
-            $max_id = $notification['notification_id'];
-        }
+    // Ensure required fields
+    if (!isset($notification_data['notification_id'])) {
+        $notification_data['notification_id'] = uniqid('notif_');
+    }
+    if (!isset($notification_data['created_at'])) {
+        $notification_data['created_at'] = date('Y-m-d H:i:s');
+    }
+    if (!isset($notification_data['is_read'])) {
+        $notification_data['is_read'] = false;
     }
     
-    $notification_data = [
-        'notification_id' => $max_id + 1,
-        'user_id' => $user_id,
-        'message' => $message,
-        'status' => 'unread',
-        'created_at' => date('Y-m-d H:i:s')
-    ];
-    
-    // Add to notifications array
     $notifications[] = $notification_data;
     
-    // Save to file
-    return file_put_contents($notifications_file, json_encode($notifications, JSON_PRETTY_PRINT)) !== false;
+    $json = json_encode($notifications, JSON_PRETTY_PRINT);
+    return file_put_contents($notifications_file, $json) !== false;
 }
 
 // Function to mark notification as read
@@ -632,20 +635,143 @@ function mark_notification_read($notification_id) {
     $notifications = get_all_notifications();
     $updated = false;
     
-    foreach ($notifications as $key => $notification) {
+    foreach ($notifications as &$notification) {
         if ($notification['notification_id'] == $notification_id) {
-            $notifications[$key]['status'] = 'read';
+            $notification['is_read'] = true;
             $updated = true;
             break;
         }
     }
     
     if ($updated) {
-        // Save to file
-        return file_put_contents($notifications_file, json_encode($notifications, JSON_PRETTY_PRINT)) !== false;
+        $json = json_encode($notifications, JSON_PRETTY_PRINT);
+        return file_put_contents($notifications_file, $json) !== false;
     }
     
     return false;
+}
+
+// ===== ACCOUNT REQUEST FUNCTIONS =====
+
+// Function to get all account requests
+function get_account_requests() {
+    global $account_requests_file;
+    
+    if (file_exists($account_requests_file)) {
+        $json = file_get_contents($account_requests_file);
+        return json_decode($json, true) ?: [];
+    }
+    
+    return [];
+}
+
+// Function to get account request by ID
+function get_account_request_by_id($request_id) {
+    $requests = get_account_requests();
+    
+    foreach ($requests as $request) {
+        if ($request['request_id'] === $request_id) {
+            return $request;
+        }
+    }
+    
+    return null;
+}
+
+// Function to save a new account request
+function save_account_request($request_data) {
+    global $account_requests_file, $data_dir;
+    
+    // Ensure data directory exists
+    if (!file_exists($data_dir)) {
+        mkdir($data_dir, 0755, true);
+    }
+    
+    // Get existing requests or initialize empty array
+    $requests = get_account_requests();
+    $requests[] = $request_data;
+    
+    // Encode and save
+    $json = json_encode($requests, JSON_PRETTY_PRINT);
+    return file_put_contents($account_requests_file, $json) !== false;
+}
+
+// Function to update account request status
+function update_account_request_status($request_id, $status, $admin_comment = '') {
+    global $account_requests_file;
+    
+    $requests = get_account_requests();
+    $updated = false;
+    
+    foreach ($requests as &$request) {
+        if ($request['request_id'] === $request_id) {
+            $request['status'] = $status;
+            $request['admin_comment'] = $admin_comment;
+            $request['updated_at'] = date('Y-m-d H:i:s');
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        $json = json_encode($requests, JSON_PRETTY_PRINT);
+        return file_put_contents($account_requests_file, $json) !== false;
+    }
+    
+    return false;
+}
+
+// Function to approve account request and create user
+function approve_account_request($request_id, $admin_comment = '') {
+    $request = get_account_request_by_id($request_id);
+    
+    if (!$request || $request['status'] !== 'pending') {
+        return false;
+    }
+    
+    // Generate a random password
+    $password = bin2hex(random_bytes(4)); // 8 characters
+    
+    // Create user from request
+    $user_data = [
+        'user_id' => uniqid('user_'),
+        'full_name' => $request['full_name'],
+        'email' => $request['email'],
+        'password' => password_hash($password, PASSWORD_DEFAULT),
+        'role' => $request['role_requested'],
+        'department' => $request['department'],
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+    
+    $user_added = add_user($user_data);
+    
+    if ($user_added) {
+        // Update request status
+        $updated = update_account_request_status($request_id, 'approved', $admin_comment);
+        
+        if ($updated) {
+            // Create notification for the user (will be visible after they log in)
+            $notification_data = [
+                'notification_id' => uniqid('notif_'),
+                'user_id' => $user_data['user_id'],
+                'type' => 'account_created',
+                'message' => "Your account request has been approved. Your temporary password is: {$password}",
+                'reference_id' => $request_id,
+                'is_read' => false,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+            add_notification($notification_data);
+            
+            return ['success' => true, 'password' => $password];
+        }
+    }
+    
+    return false;
+}
+
+// Function to reject account request
+function reject_account_request($request_id, $admin_comment = '') {
+    return update_account_request_status($request_id, 'rejected', $admin_comment);
 }
 
 // ===== INVENTORY MANAGEMENT FUNCTIONS =====

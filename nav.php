@@ -8,7 +8,7 @@ $unread_count = 0;
 if (isset($_SESSION['user_id'])) {
     $notifications = get_user_notifications($_SESSION['user_id']);
     foreach ($notifications as $notification) {
-        if ($notification['status'] === 'unread') {
+        if (isset($notification['is_read']) && $notification['is_read'] === false) {
             $unread_count++;
         }
     }
@@ -17,39 +17,51 @@ if (isset($_SESSION['user_id'])) {
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="index.php">Purchase Management System</a>
+        <a class="navbar-brand" href="index.php">School Resource Management System</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <?php if ($user_role === 'admin'): ?>
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="admin_dashboard.php">User Management</a></li>
-                    <li class="nav-item"><a class="nav-link" href="create_requisition.php">New Requisition</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view_requisitions.php">Requisitions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="account_requests.php">Account Requests</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+                        <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                            <li><a class="dropdown-item" href="create_requisition.php">New Request</a></li>
+                            <li><a class="dropdown-item" href="view_requisitions.php">All Requests</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="inventory.php">Inventory</a></li>
                     <li class="nav-item"><a class="nav-link" href="reports.php">Reports</a></li>
-                <?php elseif ($user_role === 'approver'): ?>
-                    <li class="nav-item"><a class="nav-link" href="create_requisition.php">New Requisition</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view_requisitions.php">Pending Approvals</a></li>
-                    <li class="nav-item"><a class="nav-link" href="reports.php">Reports</a></li>
-                <?php elseif ($user_role === 'procurement'): ?>
-                    <li class="nav-item"><a class="nav-link" href="create_requisition.php">New Requisition</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view_requisitions.php">Requisitions</a></li>
-                    <li class="nav-item"><a class="nav-link" href="inventory.php">Inventory</a></li>
-                    <li class="nav-item"><a class="nav-link" href="reports.php">Reports</a></li>
-                <?php elseif ($user_role === 'requester'): ?>
-                    <li class="nav-item"><a class="nav-link" href="create_requisition.php">New Requisition</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view_requisitions.php">My Requisitions</a></li>
-                <?php elseif ($user_role === 'employee'): ?>
-                    <li class="nav-item"><a class="nav-link" href="dashboard_employee.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="requisition.php">New Requisition</a></li>
-                <?php elseif ($user_role === 'manager'): ?>
-                    <li class="nav-item"><a class="nav-link" href="dashboard_manager.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="pending_requisitions.php">Pending Requests</a></li>
-                    <li class="nav-item"><a class="nav-link" href="approve_requisition.html">Approvals</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view_requisition.html">Requisition History</a></li>
+                <?php elseif ($user_role === 'hod'): ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Department Resources</a>
+                        <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                            <li><a class="dropdown-item" href="create_requisition.php">New Request</a></li>
+                            <li><a class="dropdown-item" href="view_requisitions.php">Department Requests</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="inventory.php">Department Inventory</a></li>
+                    <li class="nav-item"><a class="nav-link" href="reports.php">Department Reports</a></li>
+                <?php elseif ($user_role === 'staff'): ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+                        <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                            <li><a class="dropdown-item" href="create_requisition.php">New Request</a></li>
+                            <li><a class="dropdown-item" href="view_requisitions.php">My Requests</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="inventory.php">View Inventory</a></li>
+                <?php elseif ($user_role === 'student'): ?>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">My Resources</a>
+                        <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                            <li><a class="dropdown-item" href="create_requisition.php">New Request</a></li>
+                            <li><a class="dropdown-item" href="view_requisitions.php">My Requests</a></li>
+                        </ul>
+                    </li>
                 <?php endif; ?>
             </ul>
             

@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 // Handle marking notifications as read
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['mark_read'])) {
-    $notification_id = intval($_POST['notification_id']);
+    $notification_id = $_POST['notification_id'];
     mark_notification_read($notification_id);
     // Redirect to avoid form resubmission
     header("Location: notifications.php");
@@ -70,7 +70,7 @@ $notifications = get_user_notifications($_SESSION['user_id']);
             </div>
             
             <?php foreach ($notifications as $notification): ?>
-                <div class="notification <?php echo ($notification['status'] === 'unread') ? 'unread' : ''; ?>">
+                <div class="notification <?php echo (isset($notification['is_read']) && $notification['is_read'] === false) ? 'unread' : ''; ?>">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <p class="mb-1"><?php echo htmlspecialchars($notification['message']); ?></p>
@@ -79,7 +79,7 @@ $notifications = get_user_notifications($_SESSION['user_id']);
                             </p>
                         </div>
                         
-                        <?php if ($notification['status'] === 'unread'): ?>
+                        <?php if (isset($notification['is_read']) && $notification['is_read'] === false): ?>
                             <div class="notification-actions">
                                 <form action="" method="post">
                                     <input type="hidden" name="notification_id" value="<?php echo $notification['notification_id']; ?>">

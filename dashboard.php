@@ -68,7 +68,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Purchase Management System</title>
+    <title>Admin Dashboard - School Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -120,7 +120,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
     
     <div class="container mt-4">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            <h1 class="h3 mb-0 text-gray-800">Admin Dashboard</h1>
             <a href="reports.php" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                 <i class="bi bi-file-earmark-text"></i> Generate Report
             </a>
@@ -134,7 +134,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Pending Requisitions</div>
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pending Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $pending_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -154,7 +154,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Approved Requisitions</div>
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $approved_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -174,7 +174,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Total Users</div>
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total School Users</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $user_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -194,7 +194,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Low Stock Items</div>
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Low Stock School Supplies</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $low_stock_count; ?></div>
                             </div>
                             <div class="col-auto">

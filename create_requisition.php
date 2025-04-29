@@ -60,14 +60,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Requisition - Purchase Management System</title>
+    <title>Request School Resources - School Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <?php require 'nav.php'; ?>
     
     <div class="container mt-4">
-        <h2>Create New Requisition</h2>
+        <h1 class="mt-4">Request School Resources</h1>
         
         <?php if ($success_message): ?>
             <div class="alert alert-success"><?php echo $success_message; ?></div>
@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <button type="button" class="btn btn-secondary" id="add-item">Add Another Item</button>
             </div>
             
-            <button type="submit" class="btn btn-primary">Submit Requisition</button>
+            <button type="submit" class="btn btn-primary">Submit Resource Request</button>
         </form>
     </div>
     

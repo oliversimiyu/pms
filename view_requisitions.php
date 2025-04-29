@@ -31,7 +31,7 @@ if ($user_role === 'admin' || $user_role === 'procurement') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Requisitions - Purchase Management System</title>
+    <title>View Resource Requests - School Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .status-pending { color: #FFC107; }
@@ -45,7 +45,7 @@ if ($user_role === 'admin' || $user_role === 'procurement') {
     
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Requisitions</h2>
+            <h1 class="mt-4">School Resource Requests</h1>
             <?php if ($user_role === 'requester' || $user_role === 'admin'): ?>
                 <a href="create_requisition.php" class="btn btn-primary">Create New Requisition</a>
             <?php endif; ?>

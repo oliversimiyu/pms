@@ -119,7 +119,7 @@ foreach ($inventory_items as $item) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports - Purchase Management System</title>
+    <title>School Reports - School Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -127,7 +127,7 @@ foreach ($inventory_items as $item) {
     <?php require 'nav.php'; ?>
     
     <div class="container mt-4">
-        <h2>Reports & Analytics</h2>
+        <h1 class="mt-4">School Reports & Analytics</h1>
         
         <!-- Report Type Selection -->
         <div class="card mb-4">
@@ -137,9 +137,9 @@ foreach ($inventory_items as $item) {
                         <label for="report_type" class="form-label">Report Type</label>
                         <select class="form-select" id="report_type" name="type" onchange="this.form.submit()">
                             <option value="requisition_status" <?php echo ($report_type === 'requisition_status') ? 'selected' : ''; ?>>Requisition Status</option>
-                            <option value="department_wise" <?php echo ($report_type === 'department_wise') ? 'selected' : ''; ?>>Department-wise Requisitions</option>
-                            <option value="monthly_trend" <?php echo ($report_type === 'monthly_trend') ? 'selected' : ''; ?>>Monthly Trend</option>
-                            <option value="inventory" <?php echo ($report_type === 'inventory') ? 'selected' : ''; ?>>Inventory Status</option>
+                            <option value="department_wise" <?php echo ($report_type === 'department_wise') ? 'selected' : ''; ?>>Department-wise Resource Requests</option>
+                            <option value="monthly_trend" <?php echo ($report_type === 'monthly_trend') ? 'selected' : ''; ?>>Monthly School Resource Trends</option>
+                            <option value="inventory" <?php echo ($report_type === 'inventory') ? 'selected' : ''; ?>>School Supplies Status</option>
                         </select>
                     </div>
                     
@@ -254,7 +254,7 @@ foreach ($inventory_items as $item) {
                 <div class="col-md-7">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h5 class="mb-0">Department-wise Requisition Count</h5>
+                            <h5 class="card-title">Department-wise Resource Requests</h5>
                         </div>
                         <div class="card-body">
                             <canvas id="departmentChart"></canvas>
@@ -265,7 +265,7 @@ foreach ($inventory_items as $item) {
                 <div class="col-md-5">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h5 class="mb-0">Department-wise Summary</h5>
+                            <h5 class="card-title">Department-wise Summary</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -357,7 +357,7 @@ foreach ($inventory_items as $item) {
         <?php elseif ($report_type === 'monthly_trend'): ?>
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">Monthly Requisition Trend</h5>
+                    <h5 class="card-title">Monthly School Resource Trends</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="monthlyTrendChart"></canvas>
@@ -366,7 +366,7 @@ foreach ($inventory_items as $item) {
             
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">Monthly Requisition Data</h5>
+                    <h5 class="card-title">Monthly Requisition Data</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -467,7 +467,7 @@ foreach ($inventory_items as $item) {
                 <div class="col-md-6">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h5 class="mb-0">Inventory by Category</h5>
+                            <h5 class="card-title">School Supplies Status</h5>
                         </div>
                         <div class="card-body">
                             <canvas id="inventoryCategoryChart"></canvas>

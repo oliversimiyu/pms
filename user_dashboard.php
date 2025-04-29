@@ -64,7 +64,7 @@ $department = get_department_by_id($user['department']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - Purchase Management System</title>
+    <title>User Dashboard - School Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -146,7 +146,7 @@ $department = get_department_by_id($user['department']);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Pending Requisitions</div>
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pending Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $pending_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -166,7 +166,7 @@ $department = get_department_by_id($user['department']);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Approved Requisitions</div>
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $approved_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -186,7 +186,7 @@ $department = get_department_by_id($user['department']);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Rejected Requisitions</div>
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejected Resource Requests</div>
                                 <div class="h5 mb-0 font-weight-bold"><?php echo $rejected_count; ?></div>
                             </div>
                             <div class="col-auto">
@@ -206,7 +206,7 @@ $department = get_department_by_id($user['department']);
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-uppercase mb-1">Total Requisition Amount</div>
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Total Resource Budget Used</div>
                                 <div class="h5 mb-0 font-weight-bold">KES <?php echo number_format($total_amount, 2); ?></div>
                             </div>
                             <div class="col-auto">
@@ -227,7 +227,7 @@ $department = get_department_by_id($user['department']);
             <div class="col-lg-7 mb-4">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold">My Recent Requisitions</h6>
+                        <h2 class="mt-4">Recent Resource Requests</h2>
                         <a href="view_requisitions.php" class="btn btn-sm btn-primary">View All</a>
                     </div>
                     <div class="card-body">
@@ -315,16 +315,16 @@ $department = get_department_by_id($user['department']);
                 <!-- Quick Actions Card -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold">Quick Actions</h6>
+                        <h2 class="mt-4">School Quick Actions</h2>
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <a href="create_requisition.php" class="btn btn-primary">
-                                <i class="bi bi-plus-circle"></i> Create New Requisition
-                            </a>
-                            <a href="view_requisitions.php" class="btn btn-outline-primary">
-                                <i class="bi bi-list-check"></i> View My Requisitions
-                            </a>
+                            <a href="create_requisition.php" class="btn btn-primary btn-lg btn-block mb-3">
+                            <i class="bi bi-plus-circle"></i> Request School Resources
+                        </a>    </a>
+                            <a href="view_requisitions.php" class="btn btn-info btn-lg btn-block mb-3">
+                            <i class="bi bi-list-check"></i> View My Resource Requests
+                        </a>    </a>
                             <a href="notifications.php" class="btn btn-outline-primary">
                                 <i class="bi bi-bell"></i> Check Notifications
                                 <?php if ($unread_count > 0): ?>
