@@ -54,6 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Get all users
 $users = get_users();
+
+// Filter by role if specified
+$role_filter = isset($_GET['role']) ? $_GET['role'] : '';
+if (!empty($role_filter)) {
+    $filtered_users = [];
+    foreach ($users as $user) {
+        if ($user['role'] === $role_filter) {
+            $filtered_users[] = $user;
+        }
+    }
+    $users = $filtered_users;
+}
+
+// Sort users by name
+usort($users, function($a, $b) {
+    return strcmp($a['full_name'], $b['full_name']);
+});
+
+// Pagination
+$items_per_page = 10;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$total_pages = ceil(count($users) / $items_per_page);
+$current_page = max(1, min($current_page, $total_pages));
+$offset = ($current_page - 1) * $items_per_page;
+$current_users = array_slice($users, $offset, $items_per_page);
 ?>
 
 <!DOCTYPE html>
@@ -61,7 +86,7 @@ $users = get_users();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage User Rights - School Resource Management System</title>
+    <title>Manage User Rights - Bumbe Technical Training Institute (BTTI) Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -84,9 +109,9 @@ $users = get_users();
 <body>
     <?php include 'nav.php'; ?>
     
-    <div class="container-fluid px-4 mt-4">
+    <div class="container mt-4">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Manage User Rights</h1>
+            <h1 class="h3 mb-0 text-gray-800">BTTI User Rights Management</h1>
             <a href="admin_dashboard.php" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
                 <i class="bi bi-arrow-left"></i> Back to Admin Dashboard
             </a>
@@ -112,9 +137,35 @@ $users = get_users();
         </div>
         <?php endif; ?>
         
+        <!-- Role Filter -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="role" class="form-label">Filter by Role</label>
+                        <select name="role" id="role" class="form-select">
+                            <option value="">All Roles</option>
+                            <option value="admin" <?php echo $role_filter === 'admin' ? 'selected' : ''; ?>>Administrator</option>
+                            <option value="hod" <?php echo $role_filter === 'hod' ? 'selected' : ''; ?>>Head of Department (HOD)</option>
+                            <option value="staff" <?php echo $role_filter === 'staff' ? 'selected' : ''; ?>>Staff</option>
+                            <option value="student" <?php echo $role_filter === 'student' ? 'selected' : ''; ?>>Student</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                    <?php if (!empty($role_filter)): ?>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a href="manage_user_rights.php" class="btn btn-secondary">Clear Filter</a>
+                    </div>
+                    <?php endif; ?>
+                </form>
+            </div>
+        </div>
+        
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold"><i class="bi bi-shield-lock"></i> User Rights Management</h6>
+                <h6 class="m-0 font-weight-bold"><i class="bi bi-shield-lock"></i> Manage User Roles</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -130,7 +181,7 @@ $users = get_users();
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($users as $user): ?>
+                            <?php foreach ($current_users as $user): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($user['full_name']); ?></td>
                                 <td><?php echo htmlspecialchars($user['email']); ?></td>
@@ -166,12 +217,36 @@ $users = get_users();
                         </tbody>
                     </table>
                 </div>
+                
+                <?php if ($total_pages > 1): ?>
+                <nav aria-label="User rights pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $current_page - 1; ?><?php echo !empty($role_filter) ? '&role=' . urlencode($role_filter) : ''; ?>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        
+                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                            <li class="page-item <?php echo ($current_page == $i) ? 'active' : ''; ?>">
+                                <a class="page-link" href="?page=<?php echo $i; ?><?php echo !empty($role_filter) ? '&role=' . urlencode($role_filter) : ''; ?>"><?php echo $i; ?></a>
+                            </li>
+                        <?php endfor; ?>
+                        
+                        <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $current_page + 1; ?><?php echo !empty($role_filter) ? '&role=' . urlencode($role_filter) : ''; ?>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <?php endif; ?>
             </div>
         </div>
         
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold"><i class="bi bi-info-circle"></i> Role Information</h6>
+                <h6 class="m-0 font-weight-bold"><i class="bi bi-info-circle"></i> BTTI Role Information</h6>
             </div>
             <div class="card-body">
                 <div class="row">
