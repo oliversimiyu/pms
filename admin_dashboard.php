@@ -38,7 +38,10 @@ $pending_requisitions = 0;
     </div>
 
     <h5 class="mt-4">Manage Users</h5>
-    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">Add New User</button>
+    <div class="mb-3">
+        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="bi bi-person-plus"></i> Add New User</button>
+        <a href="manage_user_rights.php" class="btn btn-sm btn-success"><i class="bi bi-shield-lock"></i> Manage User Rights</a>
+    </div>
     <table class="table table-bordered">
         <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Action</th></tr></thead>
         <tbody>
@@ -113,10 +116,10 @@ function deleteUser(userId) {
                     <div class="mb-3">
                         <label for="userRole" class="form-label">Role</label>
                         <select class="form-select" name="userRole" id="userRole">
-                            <option value="admin">Admin</option>
-                            <option value="requester">Requester</option>
-                            <option value="approver">Approver</option>
-                            <option value="procurement">Procurement</option>
+                            <option value="admin">Administrator</option>
+                            <option value="hod">Head of Department (HOD)</option>
+                            <option value="staff">Staff</option>
+                            <option value="student">Student</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -161,10 +164,10 @@ function deleteUser(userId) {
                     <div class="mb-3">
                         <label for="editRole" class="form-label">Role</label>
                         <select class="form-select" name="role" id="editRole">
-                            <option value="admin">Admin</option>
-                            <option value="requester">Requester</option>
-                            <option value="approver">Approver</option>
-                            <option value="procurement">Procurement</option>
+                            <option value="admin">Administrator</option>
+                            <option value="hod">Head of Department (HOD)</option>
+                            <option value="staff">Staff</option>
+                            <option value="student">Student</option>
                         </select>
                     </div>
                     
