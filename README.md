@@ -1,6 +1,6 @@
-# School Resource Management System
+# Bumbe School Resource Management System
 
-A comprehensive PHP-based School Resource Management System with robust user authentication, role-based access control, resource request workflows, inventory management, reporting, and notifications. Designed specifically for educational institutions to manage school resources efficiently.
+A comprehensive PHP-based resource management system designed specifically for Bumbe School. Features robust user authentication, role-based access control, resource request workflows, inventory management, reporting, and notifications to efficiently manage school resources.
 
 ## Features
 
