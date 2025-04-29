@@ -1,40 +1,40 @@
-# Property Management System (PMS)
+# School Resource Management System
 
-A comprehensive PHP-based Property/Purchase Management System with robust user authentication, role-based access control, requisition workflows, inventory management, reporting, and notifications.
+A comprehensive PHP-based School Resource Management System with robust user authentication, role-based access control, resource request workflows, inventory management, reporting, and notifications. Designed specifically for educational institutions to manage school resources efficiently.
 
 ## Features
 
 ### Authentication & Access Control
 - Secure login system using email/password
 - Session-based authentication
-- Role-based access control with multiple user roles:
-  - Admin
-  - Approver
-  - Procurement
-  - Requester
-  - Employee
-  - Manager
+- Role-based access control with school-specific user roles:
+  - Administrator
+  - Head of Department (HOD)
+  - Staff
+  - Student
 
 ### Dashboard
-- **Admin Dashboard**: System-wide statistics, pending approvals, user management, and inventory status
-- **User Dashboard**: Personalized view of requisitions, notifications, and quick actions
+- **Admin Dashboard**: School-wide statistics, pending approvals, user management, and inventory status
+- **HOD Dashboard**: Department-specific view of resource requests, inventory, and reports
+- **Staff Dashboard**: Personalized view of resource requests, notifications, and quick actions
+- **Student Dashboard**: Simple interface for resource requests and status tracking
 
-### Requisition Management
-- Create requisitions with multiple items
-- Track requisition status (pending, approved, rejected, processed)
-- Role-based approval workflow
-- Detailed requisition history and comments
+### Resource Request Management
+- Create resource requests with multiple items
+- Track request status (pending, approved, rejected, processed)
+- Role-based approval workflow (Administrators and HODs can approve)
+- Detailed request history and comments
 
-### Inventory Management
-- Track items, quantities, and pricing
+### School Supplies Inventory
+- Track school supplies, quantities, and pricing
 - Low stock notifications
-- Categorization and filtering
+- Categorization and filtering by department
 - Stock adjustment functionality
 
 ### Reporting & Analytics
-- Department-wise requisition reports
-- Monthly trend analysis
-- Inventory usage and value reports
+- Department-wise resource request reports
+- Monthly trend analysis for school resource allocation
+- School supplies usage and value reports
 - Exportable data formats
 
 ### Notifications
@@ -86,10 +86,10 @@ A comprehensive PHP-based Property/Purchase Management System with robust user a
 
 ## User Roles and Permissions
 
-- **Admin**: Full system access, user management, approvals
-- **Approver**: Can approve/reject requisitions
-- **Procurement**: Inventory management, processing approved requisitions
-- **Requester/Employee/Manager**: Can create requisitions, view own data
+- **Administrator**: Full system access, user management, approvals, and rights management
+- **Head of Department (HOD)**: Department-level management, can approve/reject department resource requests
+- **Staff**: Can create resource requests, view inventory, and track own requests
+- **Student**: Limited access to create and track personal resource requests
 
 ## Currency
 
@@ -108,6 +108,15 @@ The system uses Kenyan Shillings (KES) as the default currency for all monetary 
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin feature/my-new-feature`
 5. Submit a pull request
+
+## Additional Features
+
+- **Account Request System**: Users can request accounts which administrators can approve/reject
+- **User Rights Management**: Administrators can change user roles and permissions
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Data Validation**: Input validation for all forms
+- **Error Handling**: Comprehensive error messages and logging
+- **Audit Trail**: Track user actions and system changes
 
 ## License
 
