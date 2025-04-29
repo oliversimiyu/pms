@@ -68,7 +68,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Bumbe School Resource Management System</title>
+    <title>Admin Dashboard - Bumbe Technical Training Institute (BTTI) Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -120,7 +120,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
     
     <div class="container mt-4">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Bumbe School Admin Dashboard</h1>
+            <h1 class="h3 mb-0 text-gray-800">BTTI Admin Dashboard</h1>
             <a href="reports.php" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                 <i class="bi bi-file-earmark-text"></i> Generate Report
             </a>

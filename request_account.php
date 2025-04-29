@@ -86,7 +86,7 @@ $departments = [
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Request Account - Bumbe School Resource Management System</title>
+    <title>Request Account - Bumbe Technical Training Institute (BTTI) Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
@@ -130,7 +130,7 @@ $departments = [
                         <div class="col-lg-7">
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
                                 <div class="card-header">
-                                    <h3 class="text-center font-weight-light my-4">Request a Bumbe School Account</h3>
+                                    <h3 class="text-center font-weight-light my-4">Request a BTTI Account</h3>
                                 </div>
                                 <div class="card-body">
                                     <?php if ($success_message): ?>

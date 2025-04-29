@@ -1,6 +1,6 @@
-# Bumbe School Resource Management System
+# Bumbe Technical Training Institute (BTTI) Resource Management System
 
-A comprehensive PHP-based resource management system designed specifically for Bumbe School. Features robust user authentication, role-based access control, resource request workflows, inventory management, reporting, and notifications to efficiently manage school resources.
+A comprehensive PHP-based resource management system designed specifically for Bumbe Technical Training Institute (BTTI). Features robust user authentication, role-based access control, resource request workflows, inventory management, reporting, and notifications to efficiently manage institute resources.
 
 ## Features
 
