@@ -24,6 +24,31 @@ if ($user_role === 'admin' || $user_role === 'procurement') {
     // Regular users see only their own requisitions
     $requisitions = get_user_requisitions($_SESSION['user_id']);
 }
+
+// Filter by status if specified
+if (isset($_GET['status']) && !empty($_GET['status'])) {
+    $status_filter = $_GET['status'];
+    $filtered_requisitions = [];
+    foreach ($requisitions as $req) {
+        if ($req['status'] === $status_filter) {
+            $filtered_requisitions[] = $req;
+        }
+    }
+    $requisitions = $filtered_requisitions;
+}
+
+// Sort requisitions by date (newest first)
+usort($requisitions, function($a, $b) {
+    return strtotime($b['date_created']) - strtotime($a['date_created']);
+});
+
+// Pagination
+$items_per_page = 10;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$total_pages = ceil(count($requisitions) / $items_per_page);
+$current_page = max(1, min($current_page, $total_pages));
+$offset = ($current_page - 1) * $items_per_page;
+$current_requisitions = array_slice($requisitions, $offset, $items_per_page);
 ?>
 
 <!DOCTYPE html>
@@ -31,7 +56,7 @@ if ($user_role === 'admin' || $user_role === 'procurement') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Resource Requests - School Resource Management System</title>
+    <title>View Resource Requests - Bumbe Technical Training Institute (BTTI) Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .status-pending { color: #FFC107; }
@@ -45,7 +70,7 @@ if ($user_role === 'admin' || $user_role === 'procurement') {
     
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mt-4">School Resource Requests</h1>
+            <h1 class="mt-4">BTTI Resource Requests</h1>
             <?php if ($user_role === 'requester' || $user_role === 'admin'): ?>
                 <a href="create_requisition.php" class="btn btn-primary">Create New Requisition</a>
             <?php endif; ?>
@@ -68,7 +93,7 @@ if ($user_role === 'admin' || $user_role === 'procurement') {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($requisitions as $req): ?>
+                        <?php foreach ($current_requisitions as $req): ?>
                             <?php 
                                 $requester = get_user_by_id($req['requester_id']);
                                 $department = get_department_by_id($req['department']);
@@ -105,6 +130,30 @@ if ($user_role === 'admin' || $user_role === 'procurement') {
                     </tbody>
                 </table>
             </div>
+            
+            <?php if ($total_pages > 1): ?>
+            <nav aria-label="Resource requests pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $current_page - 1; ?><?php echo isset($_GET['status']) ? '&status=' . $_GET['status'] : ''; ?>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                        <li class="page-item <?php echo ($current_page == $i) ? 'active' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?><?php echo isset($_GET['status']) ? '&status=' . $_GET['status'] : ''; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    
+                    <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $current_page + 1; ?><?php echo isset($_GET['status']) ? '&status=' . $_GET['status'] : ''; ?>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
     

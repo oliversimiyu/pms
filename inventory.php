@@ -77,6 +77,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $can_manage) {
 // Get all inventory items
 $inventory = get_inventory_items();
 
+// Filter by category if specified
+$selected_category = isset($_GET['category']) ? $_GET['category'] : '';
+if (!empty($selected_category)) {
+    $filtered_inventory = [];
+    foreach ($inventory as $item) {
+        if ($item['category'] === $selected_category) {
+            $filtered_inventory[] = $item;
+        }
+    }
+    $inventory = $filtered_inventory;
+}
+
 // Group items by category for easier display
 $categories = [];
 foreach ($inventory as $item) {
@@ -85,6 +97,46 @@ foreach ($inventory as $item) {
     }
     $categories[$item['category']][] = $item;
 }
+
+// Get all unique categories for the filter dropdown
+$all_categories = [];
+foreach ($inventory as $item) {
+    if (!in_array($item['category'], $all_categories)) {
+        $all_categories[] = $item['category'];
+    }
+}
+sort($all_categories);
+
+// Pagination for each category
+$items_per_page = 10;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+// If we're showing all categories, we'll paginate the categories themselves
+// If we're filtering by a specific category, we'll paginate the items in that category
+if (empty($selected_category)) {
+    $total_categories = count($categories);
+    $total_pages = ceil($total_categories / $items_per_page);
+    $current_page = max(1, min($current_page, $total_pages));
+    $offset = ($current_page - 1) * $items_per_page;
+    
+    // Get only the categories for the current page
+    $paginated_categories = array_slice($categories, $offset, $items_per_page, true);
+} else {
+    // We're only showing one category, so we paginate its items
+    if (isset($categories[$selected_category])) {
+        $total_items = count($categories[$selected_category]);
+        $total_pages = ceil($total_items / $items_per_page);
+        $current_page = max(1, min($current_page, $total_pages));
+        $offset = ($current_page - 1) * $items_per_page;
+        
+        // Paginate the items in this category
+        $categories[$selected_category] = array_slice($categories[$selected_category], $offset, $items_per_page);
+        $paginated_categories = [$selected_category => $categories[$selected_category]];
+    } else {
+        $paginated_categories = [];
+        $total_pages = 1;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -92,7 +144,7 @@ foreach ($inventory as $item) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Supplies Inventory - School Resource Management System</title>
+    <title>School Supplies Inventory - Bumbe Technical Training Institute (BTTI) Resource Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .low-stock {
@@ -106,7 +158,7 @@ foreach ($inventory as $item) {
     
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mt-4">School Supplies Inventory</h1>
+            <h1 class="mt-4">BTTI Supplies Inventory</h1>
             <?php if ($can_manage): ?>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
                     Add New Item
@@ -122,10 +174,37 @@ foreach ($inventory as $item) {
             <div class="alert alert-danger"><?php echo $error_message; ?></div>
         <?php endif; ?>
         
-        <?php if (empty($inventory)): ?>
+        <!-- Category Filter -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="category" class="form-label">Filter by Category</label>
+                        <select name="category" id="category" class="form-select">
+                            <option value="">All Categories</option>
+                            <?php foreach ($all_categories as $cat): ?>
+                                <option value="<?php echo htmlspecialchars($cat); ?>" <?php echo $selected_category === $cat ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($cat); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                    <?php if (!empty($selected_category)): ?>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a href="inventory.php" class="btn btn-secondary">Clear Filter</a>
+                    </div>
+                    <?php endif; ?>
+                </form>
+            </div>
+        </div>
+        
+        <?php if (empty($paginated_categories)): ?>
             <div class="alert alert-info">No inventory items found.</div>
         <?php else: ?>
-            <?php foreach ($categories as $category => $items): ?>
+            <?php foreach ($paginated_categories as $category => $items): ?>
                 <div class="card mb-4">
                     <div class="card-header bg-light">
                         <h5 class="mb-0"><?php echo htmlspecialchars($category); ?></h5>
@@ -188,6 +267,30 @@ foreach ($inventory as $item) {
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    
+    <?php if ($total_pages > 1): ?>
+    <nav aria-label="Inventory pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $current_page - 1; ?><?php echo !empty($selected_category) ? '&category=' . urlencode($selected_category) : ''; ?>" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <li class="page-item <?php echo ($current_page == $i) ? 'active' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?><?php echo !empty($selected_category) ? '&category=' . urlencode($selected_category) : ''; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+            
+            <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $current_page + 1; ?><?php echo !empty($selected_category) ? '&category=' . urlencode($selected_category) : ''; ?>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <?php endif; ?>
     
     <?php if ($can_manage): ?>
         <!-- Add Item Modal -->

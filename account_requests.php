@@ -58,6 +58,22 @@ foreach ($account_requests as $request) {
     }
 }
 
+// Pagination for pending requests
+$items_per_page = 10;
+$current_page_pending = isset($_GET['pending_page']) ? (int)$_GET['pending_page'] : 1;
+$total_pages_pending = ceil(count($pending_requests) / $items_per_page);
+$current_page_pending = max(1, min($current_page_pending, $total_pages_pending));
+$offset_pending = ($current_page_pending - 1) * $items_per_page;
+$current_pending_requests = array_slice($pending_requests, $offset_pending, $items_per_page);
+
+// Pagination for processed requests
+$current_page_processed = isset($_GET['processed_page']) ? (int)$_GET['processed_page'] : 1;
+$total_pages_processed = ceil(count($processed_requests) / $items_per_page);
+$current_page_processed = max(1, min($current_page_processed, $total_pages_processed));
+$offset_processed = ($current_page_processed - 1) * $items_per_page;
+$current_processed_requests = array_slice($processed_requests, $offset_processed, $items_per_page);
+}
+
 $page_title = "Account Requests";
 ?>
 <!DOCTYPE html>
@@ -144,7 +160,7 @@ $page_title = "Account Requests";
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($pending_requests as $request): ?>
+                            <?php foreach ($current_pending_requests as $request): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($request['full_name']); ?></td>
                                 <td><?php echo htmlspecialchars($request['email']); ?></td>
@@ -248,7 +264,7 @@ $page_title = "Account Requests";
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($processed_requests as $request): ?>
+                            <?php foreach ($current_processed_requests as $request): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($request['full_name']); ?></td>
                                 <td><?php echo htmlspecialchars($request['email']); ?></td>
