@@ -41,6 +41,7 @@ $pending_requisitions = 0;
     <div class="mb-3">
         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="bi bi-person-plus"></i> Add New User</button>
         <a href="manage_user_rights.php" class="btn btn-sm btn-success"><i class="bi bi-shield-lock"></i> Manage User Rights</a>
+        <a href="reset_password.php" class="btn btn-sm btn-warning"><i class="bi bi-key"></i> Reset User Passwords</a>
     </div>
     <table class="table table-bordered">
         <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Department</th><th>Role</th><th>Action</th></tr></thead>

@@ -13,6 +13,9 @@ $user_id = $_SESSION['user_id'];
 $user_role = $_SESSION['user_role'];
 $user = get_user_by_id($user_id);
 
+// Get unread messages count
+$unread_messages_count = get_unread_message_count($user_id);
+
 // Redirect non-HOD users
 if ($user_role !== 'hod') {
     header("Location: index.php");
@@ -359,6 +362,14 @@ $recent_notifications = array_slice($notifications, 0, 5);
                             <div class="col-6 mb-3">
                                 <a href="department_reports.php" class="btn btn-secondary btn-block w-100">
                                     <i class="bi bi-file-earmark-text"></i> Department Reports
+                                </a>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <a href="messages.php" class="btn btn-info btn-block w-100">
+                                    <i class="bi bi-chat-dots"></i> Messages
+                                    <?php if (isset($unread_messages_count) && $unread_messages_count > 0): ?>
+                                        <span class="badge bg-danger ms-1"><?php echo $unread_messages_count; ?></span>
+                                    <?php endif; ?>
                                 </a>
                             </div>
                         </div>

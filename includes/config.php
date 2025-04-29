@@ -10,6 +10,7 @@ $approvals_file = $data_dir . '/approvals.json';
 $notifications_file = $data_dir . '/notifications.json';
 $inventory_file = $data_dir . '/inventory.json';
 $account_requests_file = $data_dir . '/account_requests.json';
+$messages_file = $data_dir . '/messages.json';
 
 // Ensure the data directory exists
 if (!file_exists($data_dir)) {
@@ -644,15 +645,15 @@ function add_notification($user_id_or_data, $message = null) {
 }
 
 // Function to mark notification as read
-function mark_notification_read($notification_id) {
+function mark_notification_as_read($notification_id) {
     global $notifications_file;
     
     $notifications = get_all_notifications();
     $updated = false;
     
-    foreach ($notifications as &$notification) {
-        if ($notification['notification_id'] == $notification_id) {
-            $notification['is_read'] = true;
+    foreach ($notifications as $key => $notification) {
+        if ($notification['notification_id'] === $notification_id) {
+            $notifications[$key]['is_read'] = true;
             $updated = true;
             break;
         }
@@ -661,6 +662,148 @@ function mark_notification_read($notification_id) {
     if ($updated) {
         $json = json_encode($notifications, JSON_PRETTY_PRINT);
         return file_put_contents($notifications_file, $json) !== false;
+    }
+    
+    return false;
+}
+
+// Messaging System Functions
+
+// Function to get all messages
+function get_all_messages() {
+    global $messages_file;
+    if (!file_exists($messages_file)) {
+        return [];
+    }
+    $data = file_get_contents($messages_file);
+    return json_decode($data, true) ?: [];
+}
+
+// Function to get messages for a specific user
+function get_user_messages($user_id) {
+    $messages = get_all_messages();
+    $user_messages = [];
+    
+    foreach ($messages as $message) {
+        if ($message['receiver_id'] == $user_id || $message['sender_id'] == $user_id) {
+            $user_messages[] = $message;
+        }
+    }
+    
+    // Sort messages by date (newest first)
+    usort($user_messages, function($a, $b) {
+        return strtotime($b['created_at']) - strtotime($a['created_at']);
+    });
+    
+    return $user_messages;
+}
+
+// Function to get conversation between two users
+function get_conversation($user1_id, $user2_id) {
+    $messages = get_all_messages();
+    $conversation = [];
+    
+    foreach ($messages as $message) {
+        if (($message['sender_id'] == $user1_id && $message['receiver_id'] == $user2_id) ||
+            ($message['sender_id'] == $user2_id && $message['receiver_id'] == $user1_id)) {
+            $conversation[] = $message;
+        }
+    }
+    
+    // Sort messages by date (oldest first for conversations)
+    usort($conversation, function($a, $b) {
+        return strtotime($a['created_at']) - strtotime($b['created_at']);
+    });
+    
+    return $conversation;
+}
+
+// Function to send a message
+function send_message($sender_id, $receiver_id, $subject, $content) {
+    global $messages_file, $data_dir;
+    
+    // Ensure data directory exists
+    if (!file_exists($data_dir)) {
+        mkdir($data_dir, 0755, true);
+    }
+    
+    $messages = get_all_messages();
+    
+    $new_message = [
+        'message_id' => uniqid('msg_'),
+        'sender_id' => $sender_id,
+        'receiver_id' => $receiver_id,
+        'subject' => $subject,
+        'content' => $content,
+        'is_read' => false,
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+    
+    $messages[] = $new_message;
+    
+    $json = json_encode($messages, JSON_PRETTY_PRINT);
+    return file_put_contents($messages_file, $json) !== false;
+}
+
+// Function to mark message as read
+function mark_message_as_read($message_id) {
+    global $messages_file;
+    
+    $messages = get_all_messages();
+    $updated = false;
+    
+    foreach ($messages as $key => $message) {
+        if ($message['message_id'] === $message_id) {
+            $messages[$key]['is_read'] = true;
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        $json = json_encode($messages, JSON_PRETTY_PRINT);
+        return file_put_contents($messages_file, $json) !== false;
+    }
+    
+    return false;
+}
+
+// Function to get unread message count for a user
+function get_unread_message_count($user_id) {
+    $messages = get_all_messages();
+    $count = 0;
+    
+    foreach ($messages as $message) {
+        if ($message['receiver_id'] == $user_id && $message['is_read'] === false) {
+            $count++;
+        }
+    }
+    
+    return $count;
+}
+
+// Function to delete a message
+function delete_message($message_id, $user_id) {
+    global $messages_file;
+    
+    $messages = get_all_messages();
+    $updated = false;
+    
+    foreach ($messages as $key => $message) {
+        if ($message['message_id'] === $message_id && 
+            ($message['sender_id'] == $user_id || $message['receiver_id'] == $user_id)) {
+            // Remove the message
+            unset($messages[$key]);
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        // Reindex array
+        $messages = array_values($messages);
+        $json = json_encode($messages, JSON_PRETTY_PRINT);
+        return file_put_contents($messages_file, $json) !== false;
     }
     
     return false;

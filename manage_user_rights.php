@@ -112,9 +112,14 @@ $current_users = array_slice($users, $offset, $items_per_page);
     <div class="container mt-4">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">BTTI User Rights Management</h1>
-            <a href="admin_dashboard.php" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-                <i class="bi bi-arrow-left"></i> Back to Admin Dashboard
-            </a>
+            <div>
+                <a href="reset_password.php" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm me-2">
+                    <i class="bi bi-key"></i> Reset User Passwords
+                </a>
+                <a href="admin_dashboard.php" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+                    <i class="bi bi-arrow-left"></i> Back to Admin Dashboard
+                </a>
+            </div>
         </div>
         
         <nav aria-label="breadcrumb">

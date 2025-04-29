@@ -13,6 +13,12 @@ if (isset($_SESSION['user_id'])) {
         }
     }
 }
+
+// Get unread messages count
+$unread_messages_count = 0;
+if (isset($_SESSION['user_id'])) {
+    $unread_messages_count = get_unread_message_count($_SESSION['user_id']);
+}
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -67,6 +73,16 @@ if (isset($_SESSION['user_id'])) {
             
             <?php if ($user_role): ?>
                 <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="messages.php">
+                            Messages
+                            <?php if ($unread_messages_count > 0): ?>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    <?php echo $unread_messages_count; ?>
+                                </span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link position-relative" href="notifications.php">
                             Notifications
