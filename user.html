@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="add_users.php" method="post">
+                    <input type="hidden" name="action" value="add"> <!-- Add this line -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Name</label>
+                        <input type="text" name="username" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="useremail" class="form-label">Email</label>
+                        <input type="email" name="useremail" class="form-control" id="useremail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userrole" class="form-label">Role</label>
+                        <select class="form-select" name="userrole" id="userrole">
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                            <option value="moderator">Moderator</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deparment" class="form-label">Department</label>
+                        <input type="text" name="deparment" class="form-control" id="deparment" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+    
+</body>
+</html>

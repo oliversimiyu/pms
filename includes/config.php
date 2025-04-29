@@ -1,0 +1,761 @@
+<?php
+
+// Use a simple file-based storage system instead of a database
+$data_dir = __DIR__ . '/../data';
+$users_file = $data_dir . '/users.json';
+$departments_file = $data_dir . '/departments.json';
+$requisitions_file = $data_dir . '/requisitions.json';
+$items_file = $data_dir . '/items.json';
+$approvals_file = $data_dir . '/approvals.json';
+$notifications_file = $data_dir . '/notifications.json';
+$inventory_file = $data_dir . '/inventory.json';
+
+// Ensure the data directory exists
+if (!file_exists($data_dir)) {
+    mkdir($data_dir, 0755, true);
+}
+
+$db_available = false;
+$db_error = "Database connection not initialized";
+
+try {
+    // Check if we can access the data directory
+    if (is_dir($data_dir) && is_writable($data_dir)) {
+        $db_available = true;
+        
+        // Check if users file exists
+        if (!file_exists($users_file)) {
+            // Create default admin user
+            $admin_user = [
+                'user_id' => 1,
+                'full_name' => 'Admin User',
+                'email' => 'admin@example.com',
+                'department' => 'Administration',
+                'role' => 'admin',
+                'password' => password_hash('admin123', PASSWORD_DEFAULT),
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+            
+            // Create initial users array with admin user
+            $users = [$admin_user];
+            
+            // Save to file
+            file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT));
+        }
+        
+        // Check if departments file exists
+        if (!file_exists($departments_file)) {
+            // Create initial departments
+            $departments = [
+                [
+                    'department_id' => 1,
+                    'department_name' => 'Administration',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 2,
+                    'department_name' => 'Finance',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 3,
+                    'department_name' => 'IT',
+                    'created_at' => date('Y-m-d H:i:s')
+                ]
+            ];
+            
+            // Save to file
+            file_put_contents($departments_file, json_encode($departments, JSON_PRETTY_PRINT));
+        }
+        
+        // Initialize other files if they don't exist
+        if (!file_exists($requisitions_file)) {
+            file_put_contents($requisitions_file, json_encode([], JSON_PRETTY_PRINT));
+        }
+        
+        if (!file_exists($items_file)) {
+            file_put_contents($items_file, json_encode([], JSON_PRETTY_PRINT));
+        }
+        
+        if (!file_exists($approvals_file)) {
+            file_put_contents($approvals_file, json_encode([], JSON_PRETTY_PRINT));
+        }
+        
+        if (!file_exists($notifications_file)) {
+            file_put_contents($notifications_file, json_encode([], JSON_PRETTY_PRINT));
+        }
+        
+        if (!file_exists($inventory_file)) {
+            // Create initial inventory items
+            $inventory = [
+                [
+                    'item_id' => 1,
+                    'item_name' => 'Laptop',
+                    'category' => 'Electronics',
+                    'unit' => 'piece',
+                    'stock_level' => 10,
+                    'reorder_level' => 3,
+                    'unit_price' => 1200.00,
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'item_id' => 2,
+                    'item_name' => 'Printer Paper',
+                    'category' => 'Office Supplies',
+                    'unit' => 'ream',
+                    'stock_level' => 50,
+                    'reorder_level' => 10,
+                    'unit_price' => 5.99,
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'item_id' => 3,
+                    'item_name' => 'Desk Chair',
+                    'category' => 'Furniture',
+                    'unit' => 'piece',
+                    'stock_level' => 15,
+                    'reorder_level' => 5,
+                    'unit_price' => 199.99,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]
+            ];
+            
+            file_put_contents($inventory_file, json_encode($inventory, JSON_PRETTY_PRINT));
+        }
+    } else {
+        $db_error = "Cannot access data directory. Please check permissions.";
+    }
+} catch (Exception $e) {
+    $db_error = "File system error: " . $e->getMessage();
+}
+
+function is_db_available() {
+    global $db_available;
+    return $db_available;
+}
+
+function get_db_error() {
+    global $db_error;
+    return isset($db_error) ? $db_error : "Unknown database error";
+}
+
+// ===== USER MANAGEMENT FUNCTIONS =====
+
+// Function to get all users
+function get_users() {
+    global $users_file;
+    
+    if (!file_exists($users_file)) {
+        return [];
+    }
+    
+    $data = file_get_contents($users_file);
+    return json_decode($data, true) ?: [];
+}
+
+// Function to get user by email
+function get_user_by_email($email) {
+    $users = get_users();
+    
+    foreach ($users as $user) {
+        if ($user['email'] === $email) {
+            return $user;
+        }
+    }
+    
+    return null;
+}
+
+// Function to get user by ID
+function get_user_by_id($user_id) {
+    $users = get_users();
+    
+    foreach ($users as $user) {
+        if ($user['user_id'] == $user_id) {
+            return $user;
+        }
+    }
+    
+    return null;
+}
+
+// Function to add a new user
+function add_user($user_data) {
+    global $users_file;
+    
+    $users = get_users();
+    
+    // Generate new user ID
+    $max_id = 0;
+    foreach ($users as $user) {
+        if ($user['user_id'] > $max_id) {
+            $max_id = $user['user_id'];
+        }
+    }
+    
+    $user_data['user_id'] = $max_id + 1;
+    $user_data['created_at'] = date('Y-m-d H:i:s');
+    
+    // Add to users array
+    $users[] = $user_data;
+    
+    // Save to file
+    return file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT)) !== false;
+}
+
+// Function to update an existing user
+function update_user($user_id, $user_data) {
+    global $users_file;
+    
+    $users = get_users();
+    $updated = false;
+    
+    foreach ($users as $key => $user) {
+        if ($user['user_id'] == $user_id) {
+            // Preserve user_id and created_at
+            $user_data['user_id'] = $user['user_id'];
+            $user_data['created_at'] = $user['created_at'];
+            
+            // Update user
+            $users[$key] = $user_data;
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        // Save to file
+        return file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT)) !== false;
+    }
+    
+    return false;
+}
+
+// Function to delete a user
+function delete_user($user_id) {
+    global $users_file;
+    
+    $users = get_users();
+    $updated = false;
+    
+    foreach ($users as $key => $user) {
+        if ($user['user_id'] == $user_id) {
+            // Remove user
+            unset($users[$key]);
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        // Reindex array
+        $users = array_values($users);
+        
+        // Save to file
+        return file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT)) !== false;
+    }
+    
+    return false;
+}
+
+// ===== DEPARTMENT MANAGEMENT FUNCTIONS =====
+
+// Function to get all departments
+function get_departments() {
+    global $departments_file;
+    
+    if (!file_exists($departments_file)) {
+        return [];
+    }
+    
+    $data = file_get_contents($departments_file);
+    return json_decode($data, true) ?: [];
+}
+
+// Function to get department by ID
+function get_department_by_id($department_id) {
+    $departments = get_departments();
+    
+    foreach ($departments as $department) {
+        if ($department['department_id'] == $department_id) {
+            return $department;
+        }
+    }
+    
+    return null;
+}
+
+// Function to add a new department
+function add_department($department_data) {
+    global $departments_file;
+    
+    $departments = get_departments();
+    
+    // Generate new department ID
+    $max_id = 0;
+    foreach ($departments as $dept) {
+        if ($dept['department_id'] > $max_id) {
+            $max_id = $dept['department_id'];
+        }
+    }
+    
+    $department_data['department_id'] = $max_id + 1;
+    $department_data['created_at'] = date('Y-m-d H:i:s');
+    
+    // Add to departments array
+    $departments[] = $department_data;
+    
+    // Save to file
+    return file_put_contents($departments_file, json_encode($departments, JSON_PRETTY_PRINT)) !== false;
+}
+
+// ===== REQUISITION MANAGEMENT FUNCTIONS =====
+
+// Function to get all requisitions
+function get_all_requisitions() {
+    global $requisitions_file;
+    
+    if (!file_exists($requisitions_file)) {
+        return [];
+    }
+    
+    $data = file_get_contents($requisitions_file);
+    $requisitions = json_decode($data, true) ?: [];
+    
+    // Sort by created_at date (newest first)
+    usort($requisitions, function($a, $b) {
+        return strtotime($b['created_at']) - strtotime($a['created_at']);
+    });
+    
+    return $requisitions;
+}
+
+// Function to get requisitions for a specific user
+function get_user_requisitions($user_id) {
+    $requisitions = get_all_requisitions();
+    $user_requisitions = [];
+    
+    foreach ($requisitions as $req) {
+        if ($req['requester_id'] == $user_id) {
+            $user_requisitions[] = $req;
+        }
+    }
+    
+    return $user_requisitions;
+}
+
+// Function to get requisitions pending approval
+function get_requisitions_for_approval($approver_id) {
+    $requisitions = get_all_requisitions();
+    $pending_requisitions = [];
+    
+    // Get user role to determine which requisitions they can approve
+    $approver = get_user_by_id($approver_id);
+    if (!$approver) {
+        return [];
+    }
+    
+    foreach ($requisitions as $req) {
+        if ($req['status'] === 'pending') {
+            // Check if this approver has already approved this requisition
+            $already_approved = false;
+            $approvals = get_approvals_for_requisition($req['requisition_id']);
+            
+            foreach ($approvals as $approval) {
+                if ($approval['approver_id'] == $approver_id) {
+                    $already_approved = true;
+                    break;
+                }
+            }
+            
+            if (!$already_approved) {
+                $pending_requisitions[] = $req;
+            }
+        }
+    }
+    
+    return $pending_requisitions;
+}
+
+// Function to get a specific requisition by ID
+function get_requisition_by_id($requisition_id) {
+    $requisitions = get_all_requisitions();
+    
+    foreach ($requisitions as $req) {
+        if ($req['requisition_id'] == $requisition_id) {
+            return $req;
+        }
+    }
+    
+    return null;
+}
+
+// Function to add a new requisition
+function add_requisition($requisition_data) {
+    global $requisitions_file;
+    
+    $requisitions = get_all_requisitions();
+    
+    // Generate new requisition ID
+    $max_id = 0;
+    foreach ($requisitions as $req) {
+        if ($req['requisition_id'] > $max_id) {
+            $max_id = $req['requisition_id'];
+        }
+    }
+    
+    $requisition_data['requisition_id'] = $max_id + 1;
+    if (!isset($requisition_data['created_at'])) {
+        $requisition_data['created_at'] = date('Y-m-d H:i:s');
+    }
+    
+    // Add to requisitions array
+    $requisitions[] = $requisition_data;
+    
+    // Save to file
+    $result = file_put_contents($requisitions_file, json_encode($requisitions, JSON_PRETTY_PRINT)) !== false;
+    
+    if ($result) {
+        // Create notification for department approvers
+        $requester = get_user_by_id($requisition_data['requester_id']);
+        $department = get_department_by_id($requisition_data['department']);
+        
+        $notification_message = "New requisition #" . $requisition_data['requisition_id'] . " submitted by " . 
+                               ($requester ? $requester['full_name'] : 'Unknown') . " for " . 
+                               ($department ? $department['department_name'] : 'Unknown') . " department.";
+        
+        // Get all approvers
+        $users = get_users();
+        foreach ($users as $user) {
+            if ($user['role'] === 'approver') {
+                add_notification($user['user_id'], $notification_message);
+            }
+        }
+    }
+    
+    return $result;
+}
+
+// Function to update a requisition
+function update_requisition($requisition_id, $requisition_data) {
+    global $requisitions_file;
+    
+    $requisitions = get_all_requisitions();
+    $updated = false;
+    
+    foreach ($requisitions as $key => $req) {
+        if ($req['requisition_id'] == $requisition_id) {
+            // Preserve requisition_id and created_at
+            $requisition_data['requisition_id'] = $req['requisition_id'];
+            $requisition_data['created_at'] = $req['created_at'];
+            
+            // Update requisition
+            $requisitions[$key] = $requisition_data;
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        // Save to file
+        return file_put_contents($requisitions_file, json_encode($requisitions, JSON_PRETTY_PRINT)) !== false;
+    }
+    
+    return false;
+}
+
+// ===== APPROVAL MANAGEMENT FUNCTIONS =====
+
+// Function to get all approvals
+function get_all_approvals() {
+    global $approvals_file;
+    
+    if (!file_exists($approvals_file)) {
+        return [];
+    }
+    
+    $data = file_get_contents($approvals_file);
+    return json_decode($data, true) ?: [];
+}
+
+// Function to get approvals for a specific requisition
+function get_approvals_for_requisition($requisition_id) {
+    $approvals = get_all_approvals();
+    $req_approvals = [];
+    
+    foreach ($approvals as $approval) {
+        if ($approval['requisition_id'] == $requisition_id) {
+            $req_approvals[] = $approval;
+        }
+    }
+    
+    // Sort by approved_at date
+    usort($req_approvals, function($a, $b) {
+        return strtotime($a['approved_at']) - strtotime($b['approved_at']);
+    });
+    
+    return $req_approvals;
+}
+
+// Function to add a new approval
+function add_approval($approval_data) {
+    global $approvals_file;
+    
+    $approvals = get_all_approvals();
+    
+    // Generate new approval ID
+    $max_id = 0;
+    foreach ($approvals as $approval) {
+        if ($approval['approval_id'] > $max_id) {
+            $max_id = $approval['approval_id'];
+        }
+    }
+    
+    $approval_data['approval_id'] = $max_id + 1;
+    if (!isset($approval_data['approved_at'])) {
+        $approval_data['approved_at'] = date('Y-m-d H:i:s');
+    }
+    
+    // Add to approvals array
+    $approvals[] = $approval_data;
+    
+    // Save to file
+    $result = file_put_contents($approvals_file, json_encode($approvals, JSON_PRETTY_PRINT)) !== false;
+    
+    if ($result) {
+        // Update requisition status if necessary
+        $requisition = get_requisition_by_id($approval_data['requisition_id']);
+        if ($requisition) {
+            if ($approval_data['status'] === 'rejected') {
+                // If rejected, update requisition status to rejected
+                $requisition['status'] = 'rejected';
+                update_requisition($requisition['requisition_id'], $requisition);
+                
+                // Create notification for requester
+                $approver = get_user_by_id($approval_data['approver_id']);
+                $notification_message = "Your requisition #" . $requisition['requisition_id'] . " has been rejected by " . 
+                                       ($approver ? $approver['full_name'] : 'Unknown') . ".";
+                add_notification($requisition['requester_id'], $notification_message);
+            } else if ($approval_data['status'] === 'approved') {
+                // If approved, check if all required approvals are done
+                // For simplicity, we'll assume one approval is enough to change status to approved
+                $requisition['status'] = 'approved';
+                update_requisition($requisition['requisition_id'], $requisition);
+                
+                // Create notification for requester
+                $approver = get_user_by_id($approval_data['approver_id']);
+                $notification_message = "Your requisition #" . $requisition['requisition_id'] . " has been approved by " . 
+                                       ($approver ? $approver['full_name'] : 'Unknown') . ".";
+                add_notification($requisition['requester_id'], $notification_message);
+                
+                // Create notification for procurement team
+                $users = get_users();
+                foreach ($users as $user) {
+                    if ($user['role'] === 'procurement') {
+                        $proc_message = "Requisition #" . $requisition['requisition_id'] . " has been approved and is ready for processing.";
+                        add_notification($user['user_id'], $proc_message);
+                    }
+                }
+            }
+        }
+    }
+    
+    return $result;
+}
+
+// ===== NOTIFICATION MANAGEMENT FUNCTIONS =====
+
+// Function to get all notifications
+function get_all_notifications() {
+    global $notifications_file;
+    
+    if (!file_exists($notifications_file)) {
+        return [];
+    }
+    
+    $data = file_get_contents($notifications_file);
+    return json_decode($data, true) ?: [];
+}
+
+// Function to get notifications for a specific user
+function get_user_notifications($user_id) {
+    $notifications = get_all_notifications();
+    $user_notifications = [];
+    
+    foreach ($notifications as $notification) {
+        if ($notification['user_id'] == $user_id) {
+            $user_notifications[] = $notification;
+        }
+    }
+    
+    // Sort by created_at date (newest first)
+    usort($user_notifications, function($a, $b) {
+        return strtotime($b['created_at']) - strtotime($a['created_at']);
+    });
+    
+    return $user_notifications;
+}
+
+// Function to add a new notification
+function add_notification($user_id, $message) {
+    global $notifications_file;
+    
+    $notifications = get_all_notifications();
+    
+    // Generate new notification ID
+    $max_id = 0;
+    foreach ($notifications as $notification) {
+        if ($notification['notification_id'] > $max_id) {
+            $max_id = $notification['notification_id'];
+        }
+    }
+    
+    $notification_data = [
+        'notification_id' => $max_id + 1,
+        'user_id' => $user_id,
+        'message' => $message,
+        'status' => 'unread',
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+    
+    // Add to notifications array
+    $notifications[] = $notification_data;
+    
+    // Save to file
+    return file_put_contents($notifications_file, json_encode($notifications, JSON_PRETTY_PRINT)) !== false;
+}
+
+// Function to mark notification as read
+function mark_notification_read($notification_id) {
+    global $notifications_file;
+    
+    $notifications = get_all_notifications();
+    $updated = false;
+    
+    foreach ($notifications as $key => $notification) {
+        if ($notification['notification_id'] == $notification_id) {
+            $notifications[$key]['status'] = 'read';
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        // Save to file
+        return file_put_contents($notifications_file, json_encode($notifications, JSON_PRETTY_PRINT)) !== false;
+    }
+    
+    return false;
+}
+
+// ===== INVENTORY MANAGEMENT FUNCTIONS =====
+
+// Function to get all inventory items
+function get_inventory_items() {
+    global $inventory_file;
+    
+    if (!file_exists($inventory_file)) {
+        return [];
+    }
+    
+    $data = file_get_contents($inventory_file);
+    return json_decode($data, true) ?: [];
+}
+
+// Function to get inventory item by ID
+function get_inventory_item_by_id($item_id) {
+    $inventory = get_inventory_items();
+    
+    foreach ($inventory as $item) {
+        if ($item['item_id'] == $item_id) {
+            return $item;
+        }
+    }
+    
+    return null;
+}
+
+// Function to add a new inventory item
+function add_inventory_item($item_data) {
+    global $inventory_file;
+    
+    $inventory = get_inventory_items();
+    
+    // Generate new item ID
+    $max_id = 0;
+    foreach ($inventory as $item) {
+        if ($item['item_id'] > $max_id) {
+            $max_id = $item['item_id'];
+        }
+    }
+    
+    $item_data['item_id'] = $max_id + 1;
+    $item_data['created_at'] = date('Y-m-d H:i:s');
+    
+    // Add to inventory array
+    $inventory[] = $item_data;
+    
+    // Save to file
+    return file_put_contents($inventory_file, json_encode($inventory, JSON_PRETTY_PRINT)) !== false;
+}
+
+// Function to update inventory item
+function update_inventory_item($item_id, $item_data) {
+    global $inventory_file;
+    
+    $inventory = get_inventory_items();
+    $updated = false;
+    
+    foreach ($inventory as $key => $item) {
+        if ($item['item_id'] == $item_id) {
+            // Preserve item_id and created_at
+            $item_data['item_id'] = $item['item_id'];
+            $item_data['created_at'] = $item['created_at'];
+            
+            // Update item
+            $inventory[$key] = $item_data;
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        // Save to file
+        $result = file_put_contents($inventory_file, json_encode($inventory, JSON_PRETTY_PRINT)) !== false;
+        
+        // Check if stock level is below reorder level
+        if ($item_data['stock_level'] <= $item_data['reorder_level']) {
+            // Create notification for procurement team
+            $users = get_users();
+            foreach ($users as $user) {
+                if ($user['role'] === 'procurement' || $user['role'] === 'admin') {
+                    $message = "Low stock alert: " . $item_data['item_name'] . " is below reorder level. Current stock: " . 
+                              $item_data['stock_level'] . " " . $item_data['unit'] . "s.";
+                    add_notification($user['user_id'], $message);
+                }
+            }
+        }
+        
+        return $result;
+    }
+    
+    return false;
+}
+
+// Function to update stock level
+function update_stock_level($item_id, $quantity_change) {
+    $item = get_inventory_item_by_id($item_id);
+    
+    if ($item) {
+        $item['stock_level'] += $quantity_change;
+        if ($item['stock_level'] < 0) {
+            $item['stock_level'] = 0;
+        }
+        
+        return update_inventory_item($item_id, $item);
+    }
+    
+    return false;
+}
+
+?>

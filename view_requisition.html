@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requisition Tracking | Purchase Requisition System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 900px;
+            margin-top: 50px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3 class="text-center">Requisition Tracking</h3>
+
+    <!-- Filter Options -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label for="dateRange" class="form-label">Date Range</label>
+            <input type="date" class="form-control" id="dateRange">
+        </div>
+        <div class="col-md-4">
+            <label for="department" class="form-label">Department</label>
+            <select class="form-control" id="department">
+                <option value="">All Departments</option>
+                <option value="IT">IT</option>
+                <option value="HR">HR</option>
+                <option value="Finance">Finance</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-control" id="status">
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Requisitions Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Requisition ID</th>
+                    <th>Requester</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Date Submitted</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>REQ001</td>
+                    <td>John Doe</td>
+                    <td>IT</td>
+                    <td><span class="badge bg-warning">Pending</span></td>
+                    <td>2025-02-13</td>
+                    <td><a href="view_requisition.php?id=1" class="btn btn-primary btn-sm">View</a></td>
+                </tr>
+                <tr>
+                    <td>REQ002</td>
+                    <td>Jane Smith</td>
+                    <td>HR</td>
+                    <td><span class="badge bg-success">Approved</span></td>
+                    <td>2025-02-12</td>
+                    <td><a href="view_requisition.php?id=2" class="btn btn-primary btn-sm">View</a></td>
+                </tr>
+                <tr>
+                    <td>REQ003</td>
+                    <td>Michael Brown</td>
+                    <td>Finance</td>
+                    <td><span class="badge bg-danger">Rejected</span></td>
+                    <td>2025-02-11</td>
+                    <td><a href="view_requisition.php?id=3" class="btn btn-primary btn-sm">View</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
