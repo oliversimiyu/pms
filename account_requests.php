@@ -72,7 +72,6 @@ $total_pages_processed = ceil(count($processed_requests) / $items_per_page);
 $current_page_processed = max(1, min($current_page_processed, $total_pages_processed));
 $offset_processed = ($current_page_processed - 1) * $items_per_page;
 $current_processed_requests = array_slice($processed_requests, $offset_processed, $items_per_page);
-}
 
 $page_title = "Account Requests";
 ?>

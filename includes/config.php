@@ -601,7 +601,7 @@ function get_user_notifications($user_id) {
 }
 
 // Function to add a new notification
-function add_notification($notification_data) {
+function add_notification($user_id_or_data, $message = null) {
     global $notifications_file, $data_dir;
     
     // Ensure data directory exists
@@ -610,6 +610,21 @@ function add_notification($notification_data) {
     }
     
     $notifications = get_all_notifications();
+    
+    // Handle different parameter formats
+    $notification_data = [];
+    
+    if (is_array($user_id_or_data)) {
+        // First parameter is already a notification data array
+        $notification_data = $user_id_or_data;
+    } else {
+        // First parameter is user_id, second is message
+        $notification_data = [
+            'user_id' => $user_id_or_data,
+            'message' => $message,
+            'title' => 'System Notification'
+        ];
+    }
     
     // Ensure required fields
     if (!isset($notification_data['notification_id'])) {

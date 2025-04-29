@@ -44,7 +44,7 @@ if (isset($_SESSION['user_id'])) {
                         </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="inventory.php">Department Inventory</a></li>
-                    <li class="nav-item"><a class="nav-link" href="reports.php">Department Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="department_reports.php">Department Reports</a></li>
                 <?php elseif ($user_role === 'staff'): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>

@@ -146,8 +146,8 @@ $recent_notifications = array_slice($notifications, 0, 5);
                 <a href="create_requisition.php" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm me-2">
                     <i class="bi bi-plus-circle"></i> New Request
                 </a>
-                <a href="reports.php?department=<?php echo $department_id; ?>" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-                    <i class="bi bi-file-earmark-text"></i> Department Report
+                <a href="department_reports.php" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+                    <i class="bi bi-file-earmark-text"></i> Department Reports
                 </a>
             </div>
         </div>
@@ -357,7 +357,7 @@ $recent_notifications = array_slice($notifications, 0, 5);
                                 </a>
                             </div>
                             <div class="col-6 mb-3">
-                                <a href="reports.php?department=<?php echo $department_id; ?>" class="btn btn-secondary btn-block w-100">
+                                <a href="department_reports.php" class="btn btn-secondary btn-block w-100">
                                     <i class="bi bi-file-earmark-text"></i> Department Reports
                                 </a>
                             </div>
@@ -366,6 +366,8 @@ $recent_notifications = array_slice($notifications, 0, 5);
                 </div>
             </div>
         </div>
+        
+
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
