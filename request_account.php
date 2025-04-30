@@ -63,20 +63,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 
-// Define department list for dropdown since the file might not exist yet
-$departments = [
-    'Mathematics',
-    'Sciences',
-    'Languages',
-    'Social Studies',
-    'Arts',
-    'Physical Education',
-    'Technology',
-    'Administration',
-    'Finance',
-    'Library',
-    'Student Affairs'
-];
+// Get departments from the system
+$db_departments = get_departments();
+
+// If departments exist in the database, use those
+if (!empty($db_departments)) {
+    $departments = [];
+    foreach ($db_departments as $dept) {
+        $departments[] = $dept['department_name'];
+    }
+} else {
+    // Fallback to hardcoded list if database is empty
+    $departments = [
+        'Automotive Engineering',
+        'Building and Construction',
+        'Computing and Informatics',
+        'Electrical and Electronic Engineering',
+        'Institutional Management',
+        'Liberal and Information Studies',
+        'Administrative Departments',
+        'Support Staff',
+        'Research and Development',
+        'Student Services',
+        'Development and Advancement'
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -86,7 +97,7 @@ $departments = [
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Request Account - Bumbe Technical Training Institute (BTTI) Resource Management System</title>
+    <title>Request Account - Bumbe Technical Training Institute (BTTI) REQUISITION MANAGEMENT SYSTEM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
@@ -129,8 +140,13 @@ $departments = [
                     <div class="row justify-content-center">
                         <div class="col-lg-7">
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header">
-                                    <h3 class="text-center font-weight-light my-4">Request a BTTI Account</h3>
+                                <div class="card-header text-center">
+                                    <div class="mb-3 mt-3">
+                                        <img src="images/logo.png" alt="BTTI Logo" class="img-fluid" style="max-height: 150px;">
+                                    </div>
+                                    <h3 class="font-weight-light my-2">Bumbe Technical Training Institute (BTTI)</h3>
+                                    <p class="text-muted">REQUISITION MANAGEMENT SYSTEM</p>
+                                    <h4 class="text-center font-weight-light my-3">Account Request Form</h4>
                                 </div>
                                 <div class="card-body">
                                     <?php if ($success_message): ?>
@@ -185,6 +201,7 @@ $departments = [
                                                         <option value="hod" <?php echo (isset($_POST['role_requested']) && $_POST['role_requested'] == 'hod') ? 'selected' : ''; ?>>Head of Department (HOD)</option>
                                                         <option value="staff" <?php echo (isset($_POST['role_requested']) && $_POST['role_requested'] == 'staff') ? 'selected' : ''; ?>>Staff</option>
                                                         <option value="student" <?php echo (isset($_POST['role_requested']) && $_POST['role_requested'] == 'student') ? 'selected' : ''; ?>>Student</option>
+                                                        <option value="storekeeper" <?php echo (isset($_POST['role_requested']) && $_POST['role_requested'] == 'storekeeper') ? 'selected' : ''; ?>>Storekeeper</option>
                                                     </select>
                                                     <label for="role_requested">Role Requested</label>
                                                 </div>

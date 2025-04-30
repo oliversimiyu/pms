@@ -23,7 +23,7 @@ if (isset($_SESSION['user_id'])) {
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="index.php">BTTI Resource Management System</a>
+        <a class="navbar-brand" href="index.php">BTTI REQUISITION MANAGEMENT SYSTEM</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -68,6 +68,18 @@ if (isset($_SESSION['user_id'])) {
                             <li><a class="dropdown-item" href="view_requisitions.php">My Requests</a></li>
                         </ul>
                     </li>
+                <?php elseif ($user_role === 'storekeeper'): ?>
+                    <li class="nav-item"><a class="nav-link" href="storekeeper_dashboard.php">Dashboard</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Inventory Management</a>
+                        <ul class="dropdown-menu" aria-labelledby="inventoryDropdown">
+                            <li><a class="dropdown-item" href="add_inventory.php">Add New Item</a></li>
+                            <li><a class="dropdown-item" href="update_stock.php">Update Stock</a></li>
+                            <li><a class="dropdown-item" href="inventory.php">View All Items</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="inventory_report.php">Inventory Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="view_requisitions.php">View Requisitions</a></li>
                 <?php endif; ?>
             </ul>
             

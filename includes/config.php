@@ -51,17 +51,57 @@ try {
             $departments = [
                 [
                     'department_id' => 1,
-                    'department_name' => 'Administration',
+                    'department_name' => 'Automotive Engineering',
                     'created_at' => date('Y-m-d H:i:s')
                 ],
                 [
                     'department_id' => 2,
-                    'department_name' => 'Finance',
+                    'department_name' => 'Building and Construction',
                     'created_at' => date('Y-m-d H:i:s')
                 ],
                 [
                     'department_id' => 3,
-                    'department_name' => 'IT',
+                    'department_name' => 'Computing and Informatics',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 4,
+                    'department_name' => 'Electrical and Electronic Engineering',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 5,
+                    'department_name' => 'Institutional Management',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 6,
+                    'department_name' => 'Liberal and Information Studies',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 7,
+                    'department_name' => 'Administrative Departments',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 8,
+                    'department_name' => 'Support Staff',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 9,
+                    'department_name' => 'Research and Development',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 10,
+                    'department_name' => 'Student Services',
+                    'created_at' => date('Y-m-d H:i:s')
+                ],
+                [
+                    'department_id' => 11,
+                    'department_name' => 'Development and Advancement',
                     'created_at' => date('Y-m-d H:i:s')
                 ]
             ];
@@ -959,6 +999,70 @@ function get_inventory_item_by_id($item_id) {
     return null;
 }
 
+// Define stock movements file path
+$stock_movements_file = $data_dir . '/stock_movements.json';
+
+// Function to record stock movement
+function record_stock_movement($movement_data) {
+    global $stock_movements_file, $data_dir;
+    
+    // Create file if it doesn't exist
+    if (!file_exists($stock_movements_file)) {
+        if (!is_dir($data_dir)) {
+            mkdir($data_dir, 0755, true);
+        }
+        file_put_contents($stock_movements_file, json_encode([], JSON_PRETTY_PRINT));
+    }
+    
+    // Get existing movements
+    $movements = json_decode(file_get_contents($stock_movements_file), true) ?: [];
+    
+    // Add movement ID and timestamp if not provided
+    if (!isset($movement_data['movement_id'])) {
+        $movement_data['movement_id'] = count($movements) + 1;
+    }
+    
+    if (!isset($movement_data['created_at'])) {
+        $movement_data['created_at'] = date('Y-m-d H:i:s');
+    }
+    
+    // Add to movements array
+    $movements[] = $movement_data;
+    
+    // Save back to file
+    return file_put_contents($stock_movements_file, json_encode($movements, JSON_PRETTY_PRINT)) !== false;
+}
+
+// Function to get stock movements
+function get_stock_movements($item_id = null, $limit = 10) {
+    global $stock_movements_file;
+    
+    if (!file_exists($stock_movements_file)) {
+        return [];
+    }
+    
+    $movements = json_decode(file_get_contents($stock_movements_file), true) ?: [];
+    
+    // Filter by item_id if provided
+    if ($item_id !== null) {
+        $movements = array_filter($movements, function($movement) use ($item_id) {
+            return $movement['item_id'] == $item_id;
+        });
+    }
+    
+    // Sort by created_at (newest first)
+    usort($movements, function($a, $b) {
+        return strtotime($b['created_at']) - strtotime($a['created_at']);
+    });
+    
+    // Limit results
+    if ($limit > 0) {
+        $movements = array_slice($movements, 0, $limit);
+    }
+    
+    return $movements;
+}
+
 // Function to add a new inventory item
 function add_inventory_item($item_data) {
     global $inventory_file;
@@ -985,6 +1089,21 @@ function add_inventory_item($item_data) {
 
 // Function to update inventory item
 function update_inventory_item($item_id, $item_data) {
+    // Record stock movement if quantity has changed
+    $existing_item = get_inventory_item_by_id($item_id);
+    if ($existing_item && isset($item_data['quantity']) && $existing_item['quantity'] != $item_data['quantity']) {
+        $quantity_change = $item_data['quantity'] - $existing_item['quantity'];
+        $action_type = $quantity_change > 0 ? 'add' : 'remove';
+        $movement_data = [
+            'item_id' => $item_id,
+            'action_type' => $action_type,
+            'quantity' => abs($quantity_change),
+            'notes' => $item_data['notes'] ?? 'Stock update',
+            'performed_by' => $_SESSION['user_id'] ?? 0,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        record_stock_movement($movement_data);
+    }
     global $inventory_file;
     
     $inventory = get_inventory_items();

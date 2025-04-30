@@ -15,6 +15,8 @@ if (isset($_SESSION['user_id'])) {
         header("Location: staff_dashboard.php");
     } elseif ($user_role === 'student') {
         header("Location: student_dashboard.php");
+    } elseif ($user_role === 'storekeeper') {
+        header("Location: storekeeper_dashboard.php");
     } else {
         header("Location: user_dashboard.php");
     }

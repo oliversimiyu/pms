@@ -209,6 +209,7 @@ $current_users = array_slice($users, $offset, $items_per_page);
                                             <option value="hod">Head of Department (HOD)</option>
                                             <option value="staff">Staff</option>
                                             <option value="student">Student</option>
+                                            <option value="storekeeper">Storekeeper</option>
                                         </select>
                                 </td>
                                 <td>
